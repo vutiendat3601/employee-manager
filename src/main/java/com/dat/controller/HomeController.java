@@ -75,13 +75,13 @@ public class HomeController implements Controller {
     public Response doPut(Request req) {
         Response resp = new Response();
         String canBoType = req.getParameter("can_bo_type");
-        int selectedId = Integer.parseInt(req.getParameter("selected_id"));
+        int selectedCanBoId = Integer.parseInt(req.getParameter("selected_can_bo_id"));
         switch (canBoType) {
             case "ky_su":
-                KySu kySu = new KySu();
-                kySu.setId(selectedId);
+                KySu kySu = CanBoDAO.getKySu(selectedCanBoId);
                 setBasicInformations(req, kySu);
-                String nghanhDaoTao = req.getParameter("nghanh_dao_tao");
+                String tmp = req.getParameter("nghanh_dao_tao");
+                String nghanhDaoTao = tmp.equals("") ? kySu.getNghanhDaoTao() : tmp;
                 kySu.setNghanhDaoTao(nghanhDaoTao);
                 CanBoDAO.updateKySu(kySu);
                 break;
@@ -90,14 +90,24 @@ public class HomeController implements Controller {
             case "cong_nhan":
                 break;
         }
+        resp.setAttribute("ky_su_list", CanBoDAO.getKySuList());
         return resp;
     }
 
     private void setBasicInformations(Request req, CanBo canBo) {
-        String ten = req.getParameter("ten");
-        int tuoi = Integer.parseInt(req.getParameter("tuoi"));
-        String gioiTinh = req.getParameter("gioi_tinh");
-        String diaChi = req.getParameter("dia_chi");
+        String tmp = "";
+        tmp = req.getParameter("ten");
+        String ten = tmp.equals("") ? canBo.getTen() : tmp;
+
+        tmp = req.getParameter("tuoi");
+        int tuoi = tmp.equals("") ? canBo.getTuoi() : Integer.parseInt(tmp);
+
+        tmp = req.getParameter("gioi_tinh");
+        String gioiTinh = tmp.equals("") ? canBo.getGioiTinh() : tmp;
+
+        tmp = req.getParameter("dia_chi");
+        String diaChi = tmp.equals("") ? canBo.getDiaChi() : tmp;
+
         canBo.setTen(ten);
         canBo.setTuoi(tuoi);
         canBo.setGioiTinh(gioiTinh);

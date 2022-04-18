@@ -50,13 +50,4 @@ public class CanBo {
     public void showInformation() {
         System.out.format("%-4d| %-30s| %-5d| %-10s| %-40s| ",id,ten , tuoi, gioiTinh, diaChi);
     }
-
-    public CanBo convertToCanBo() {
-        CanBo canBo = new  CanBo();
-        canBo.setTen(ten);
-        canBo.setTuoi(tuoi);
-        canBo.setGioiTinh(gioiTinh);
-        canBo.setDiaChi(diaChi);
-        return canBo;
-    }
 }

@@ -176,14 +176,22 @@ public class HomeConsole {
                 System.out.print("Type in an ID to Edit (Keep empty to back to Main menu) = ");
                 req.setMethod("put");
                 req.addParameter("can_bo_type", "ky_su");
-                int selectedId = Integer.parseInt(App.systemScanner.nextLine());
-                req.addParameter("selected_id", String.valueOf(selectedId));
+                String tmp = App.systemScanner.nextLine();
+                if (tmp.equals("")) {
+                    showMainMenu();
+                    return;
+                }
+                int selectedCanBoId = Integer.parseInt(tmp);
+                req.addParameter("selected_can_bo_id", String.valueOf(selectedCanBoId));
                 System.out.println("* Keep empty will have no change");
                 inputBasicInformation(req);
                 System.out.print("Nghanh dao tao = ");
                 String nghanhDaoTao = App.systemScanner.nextLine();
                 req.addParameter("nghanh_dao_tao", nghanhDaoTao);
                 resp = HomeController.getInstance().service(req);
+                kySuList = (List<KySu>) resp.getAttribute("ky_su_list");
+                showKySuList(kySuList);
+                showUpdateCanBoMenu();
                 break;
         }
     }

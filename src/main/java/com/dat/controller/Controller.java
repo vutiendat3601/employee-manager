@@ -10,9 +10,9 @@ public interface Controller {
         if (methodName.equalsIgnoreCase("get")) {
             return doGet(req);
         } else if (methodName.equalsIgnoreCase("post")) {
-            doPost(req);
+            return doPost(req);
         } else if (methodName.equalsIgnoreCase("put")){
-            doPut(req);
+            return doPut(req);
         }
         return null;
     }

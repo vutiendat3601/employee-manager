@@ -18,6 +18,41 @@ public class CanBoDAO {
     private static Connection conn;
 
     // READ
+
+
+    public static KySu getKySu(int can_bo_id) {
+        Connection conn = getDBConnection();
+        KySu kySu = null;
+        String sqlGetKySu = "SELECT cb.id id, cb.ten ten, cb.tuoi tuoi, cb.gioi_tinh gioi_tinh, cb.dia_chi dia_chi, "
+                + "ks.nghanh_dao_tao nghanh_dao_tao FROM can_bo cb INNER JOIN ky_su ks " +
+                "ON cb.id = ks.can_bo_id WHERE ks.can_bo_id = ?";
+        PreparedStatement ps;
+        try {
+            ps = conn.prepareStatement(sqlGetKySu);
+            ps.setInt(1, can_bo_id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()){
+                kySu = new KySu();
+                int id = rs.getInt("id");
+                kySu.setId(id);
+                String ten = rs.getString("ten");
+                int tuoi = rs.getInt("tuoi");
+                String gioiTinh = rs.getString("gioi_tinh");
+                String diaChi =rs.getString("dia_chi");
+                String nghanhDaoTao = rs.getString("nghanh_dao_tao");
+                kySu.setId(id);
+                kySu.setTen(ten);
+                kySu.setTuoi(tuoi);
+                kySu.setGioiTinh(gioiTinh);
+                kySu.setDiaChi(diaChi);
+                kySu.setNghanhDaoTao(nghanhDaoTao);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return kySu;
+    }
+
     public static List<CanBo> getCanBoList() {
         List<CanBo> canBoList = new ArrayList<>();
         Connection conn = getDBConnection();
@@ -47,10 +82,10 @@ public class CanBoDAO {
     public static List<KySu> getKySuList() {
         Connection conn = getDBConnection();
         List<KySu> kySuList = new ArrayList<>();
-        String sqlGetCongNhan = "SELECT cb.id id, cb.ten ten, cb.tuoi tuoi, cb.gioi_tinh gioi_tinh, cb.dia_chi dia_chi, "
+        String sqlGetKySuList = "SELECT cb.id id, cb.ten ten, cb.tuoi tuoi, cb.gioi_tinh gioi_tinh, cb.dia_chi dia_chi, "
                 + "ks.nghanh_dao_tao nghanh_dao_tao FROM can_bo cb INNER JOIN ky_su ks " +
                 "ON cb.id = ks.can_bo_id";
-        try (PreparedStatement ps = conn.prepareStatement(sqlGetCongNhan)) {
+        try (PreparedStatement ps = conn.prepareStatement(sqlGetKySuList)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 KySu kySu = new KySu();
@@ -77,10 +112,10 @@ public class CanBoDAO {
     public static List<NhanVien> getNhanVienList() {
         Connection conn = getDBConnection();
         List<NhanVien> nhanVienList = new ArrayList<>();
-        String sqlGetCongNhan = "SELECT cb.id id, cb.ten ten, cb.tuoi tuoi, cb.gioi_tinh gioi_tinh, cb.dia_chi dia_chi, "
+        String sqlGetNhanVienList = "SELECT cb.id id, cb.ten ten, cb.tuoi tuoi, cb.gioi_tinh gioi_tinh, cb.dia_chi dia_chi, "
                 + "nv.cong_viec cong_viec FROM can_bo cb INNER JOIN nhan_vien nv "
                 + "ON cb.id = nv.can_bo_id";
-        try (PreparedStatement ps = conn.prepareStatement(sqlGetCongNhan)) {
+        try (PreparedStatement ps = conn.prepareStatement(sqlGetNhanVienList)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 NhanVien nhanVien = new NhanVien();
@@ -158,7 +193,7 @@ public class CanBoDAO {
     }
 
     public static void addKySu(KySu kySu) {
-        int canBoId = addCanBo(kySu.convertToCanBo());
+        int canBoId = addCanBo(kySu);
         Connection conn = getDBConnection();
         String sqlAddKySu = "INSERT INTO ky_su VALUES(?,?)";
         try {
@@ -172,7 +207,7 @@ public class CanBoDAO {
     }
 
     public static void addNhanVien(NhanVien nhanVien) {
-        int canBoId = addCanBo(nhanVien.convertToCanBo());
+        int canBoId = addCanBo(nhanVien);
         Connection conn = getDBConnection();
         String sqlAddKySu = "INSERT INTO nhan_vien VALUES(?,?)";
         try {
@@ -186,7 +221,7 @@ public class CanBoDAO {
     }
 
     public static void addCongNhan(CongNhan congNhan) {
-        int canBoId = addCanBo(congNhan.convertToCanBo());
+        int canBoId = addCanBo(congNhan);
         Connection conn = getDBConnection();
         String sqlAddKySu = "INSERT INTO cong_nhan VALUES(?,?)";
         try {
@@ -203,7 +238,7 @@ public class CanBoDAO {
 
     public static void updateCanBo(CanBo canBo) {
         Connection conn = getDBConnection();
-        String sqlUpdateCanBo = "UPDATE can_bo SET ten=?, tuoi=?, gioi_tinh=?, dia_chi=? WHERE id=?";
+        String sqlUpdateCanBo = "UPDATE can_bo SET ten = ?, tuoi = ?, gioi_tinh = ?, dia_chi = ? WHERE id = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(sqlUpdateCanBo);
             ps.setString(1, canBo.getTen());
@@ -212,13 +247,16 @@ public class CanBoDAO {
             ps.setString(4, canBo.getDiaChi());
             ps.setInt(5, canBo.getId());
             ps.executeUpdate();
+            ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public static void updateKySu(KySu kySu) {
-        updateCanBo(kySu.convertToCanBo());
+        kySu.showInformation();
+        System.out.println();
+        updateCanBo(kySu);
         Connection conn = getDBConnection();
         String sqlUpdateKySu = "UPDATE ky_su SET nghanh_dao_tao = ? WHERE can_bo_id = ?";
         try {
@@ -226,6 +264,7 @@ public class CanBoDAO {
             ps.setString(1, kySu.getNghanhDaoTao());
             ps.setInt(2, kySu.getId());
             ps.executeUpdate();
+            ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
