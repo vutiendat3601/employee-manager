@@ -19,38 +19,94 @@ public class CanBoDAO {
 
     // READ
 
-
-    public static KySu getKySu(int can_bo_id) {
+    public static boolean getBasicInformation(int canBoId, CanBo canBo) {
+        boolean result = false;
+        String sqlGetBasicInformation = "SELECT * FROM can_bo WHERE id = ?";
         Connection conn = getDBConnection();
-        KySu kySu = null;
-        String sqlGetKySu = "SELECT cb.id id, cb.ten ten, cb.tuoi tuoi, cb.gioi_tinh gioi_tinh, cb.dia_chi dia_chi, "
-                + "ks.nghanh_dao_tao nghanh_dao_tao FROM can_bo cb INNER JOIN ky_su ks " +
-                "ON cb.id = ks.can_bo_id WHERE ks.can_bo_id = ?";
-        PreparedStatement ps;
         try {
-            ps = conn.prepareStatement(sqlGetKySu);
-            ps.setInt(1, can_bo_id);
+            PreparedStatement ps = conn.prepareStatement(sqlGetBasicInformation);
+            ps.setInt(1, canBoId);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()){
-                kySu = new KySu();
+            if (rs.next()) {
                 int id = rs.getInt("id");
-                kySu.setId(id);
                 String ten = rs.getString("ten");
                 int tuoi = rs.getInt("tuoi");
                 String gioiTinh = rs.getString("gioi_tinh");
-                String diaChi =rs.getString("dia_chi");
-                String nghanhDaoTao = rs.getString("nghanh_dao_tao");
-                kySu.setId(id);
-                kySu.setTen(ten);
-                kySu.setTuoi(tuoi);
-                kySu.setGioiTinh(gioiTinh);
-                kySu.setDiaChi(diaChi);
-                kySu.setNghanhDaoTao(nghanhDaoTao);
+                String diaChi = rs.getString("dia_chi");
+                canBo.setId(id);
+                canBo.setTen(ten);
+                canBo.setTuoi(tuoi);
+                canBo.setGioiTinh(gioiTinh);
+                canBo.setDiaChi(diaChi);
+                result = true;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return result;
+    }
+
+    public static KySu getKySu(int canBoId) {
+        Connection conn = getDBConnection();
+        KySu kySu = new KySu();
+        boolean result = getBasicInformation(canBoId, kySu);
+        if (!result) {
+            return null;
+        }
+        try {
+            String sqlGetKySu = "SELECT * FROM ky_su WHERE can_bo_id = ?";
+            PreparedStatement ps = conn.prepareStatement(sqlGetKySu);
+            ps.setInt(1, canBoId);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            String nghanhDaoTao = rs.getString("nghanh_dao_tao");
+            kySu.setNghanhDaoTao(nghanhDaoTao);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return kySu;
+    }
+
+    public static NhanVien getNhanVien(int canBoId) {
+        Connection conn = getDBConnection();
+        NhanVien nhanVien = new NhanVien();
+        boolean result = getBasicInformation(canBoId, nhanVien);
+        if (!result) {
+            return null;
+        }
+        try {
+            String sqlGetNhanVien = "SELECT * FROM nhan_vien WHERE can_bo_id = ?";
+            PreparedStatement ps = conn.prepareStatement(sqlGetNhanVien);
+            ps.setInt(1, canBoId);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            String congViec = rs.getString("cong_viec");
+            nhanVien.setCongViec(congViec);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return nhanVien;
+    }
+
+    public static CongNhan getCongNhan(int canBoId) {
+        Connection conn = getDBConnection();
+        CongNhan congNhan = new CongNhan();
+        boolean result = getBasicInformation(canBoId, congNhan);
+        if (!result) {
+            return null;
+        }
+        try {
+            String sqlGetCongNhan = "SELECT * FROM cong_nhan WHERE can_bo_id = ?";
+            PreparedStatement ps = conn.prepareStatement(sqlGetCongNhan);
+            ps.setInt(1, canBoId);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            int bac = rs.getInt("bac");
+            congNhan.setBac(bac);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return congNhan;
     }
 
     public static List<CanBo> getCanBoList() {
@@ -254,8 +310,6 @@ public class CanBoDAO {
     }
 
     public static void updateKySu(KySu kySu) {
-        kySu.showInformation();
-        System.out.println();
         updateCanBo(kySu);
         Connection conn = getDBConnection();
         String sqlUpdateKySu = "UPDATE ky_su SET nghanh_dao_tao = ? WHERE can_bo_id = ?";
@@ -269,6 +323,36 @@ public class CanBoDAO {
             e.printStackTrace();
         }
 
+    }
+
+    public static void updateNhanVien(NhanVien nhanVien) {
+        updateCanBo(nhanVien);
+        Connection conn = getDBConnection();
+        String sqlUpdateNhanVien = "UPDATE nhan_vien SET cong_viec = ? WHERE can_bo_id = ?";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sqlUpdateNhanVien);
+            ps.setString(1, nhanVien.getCongViec());
+            ps.setInt(2, nhanVien.getId());
+            ps.executeUpdate();
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateCongNhan(CongNhan congNhan) {
+        updateCanBo(congNhan);
+        Connection conn = getDBConnection();
+        String sqlUpdateNhanVien = "UPDATE cong_nhan SET bac = ? WHERE can_bo_id = ?";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sqlUpdateNhanVien);
+            ps.setInt(1, congNhan.getBac());
+            ps.setInt(2, congNhan.getId());
+            ps.executeUpdate();
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private static Connection getDBConnection() {

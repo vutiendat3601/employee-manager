@@ -25,17 +25,17 @@ public class HomeController implements Controller {
                 List<CanBo> canBoList = CanBoDAO.getCanBoList();
                 resp.setAttribute("can_bo_list", canBoList);
                 break;
-            case "cong_nhan_list":
-                List<CongNhan> congNhanList = CanBoDAO.getCongNhanList();
-                resp.setAttribute("cong_nhan_list", congNhanList);
+            case "ky_su_list":
+                List<KySu> kySuList = CanBoDAO.getKySuList();
+                resp.setAttribute("ky_su_list", kySuList);
                 break;
             case "nhan_vien_list":
                 List<NhanVien> nhanVienList = CanBoDAO.getNhanVienList();
                 resp.setAttribute("nhan_vien_list", nhanVienList);
                 break;
-            case "ky_su_list":
-                List<KySu> kySuList = CanBoDAO.getKySuList();
-                resp.setAttribute("ky_su_list", kySuList);
+            case "cong_nhan_list":
+                List<CongNhan> congNhanList = CanBoDAO.getCongNhanList();
+                resp.setAttribute("cong_nhan_list", congNhanList);
                 break;
         }
         return resp;
@@ -52,6 +52,7 @@ public class HomeController implements Controller {
                 String nghanhDaoTao = req.getParameter("nghanh_dao_tao");
                 kySu.setNghanhDaoTao(nghanhDaoTao);
                 CanBoDAO.addKySu(kySu);
+                resp.setAttribute("ky_su_list", CanBoDAO.getKySuList());
                 break;
             case "nhan_vien":
                 NhanVien nhanVien = new NhanVien();
@@ -59,6 +60,7 @@ public class HomeController implements Controller {
                 String congViec = req.getParameter("cong_viec");
                 nhanVien.setCongViec(congViec);
                 CanBoDAO.addNhanVien(nhanVien);
+                resp.setAttribute("nhan_vien_list", CanBoDAO.getNhanVienList());
                 break;
             case "cong_nhan":
                 CongNhan congNhan = new CongNhan();
@@ -66,6 +68,7 @@ public class HomeController implements Controller {
                 int bac = Integer.parseInt(req.getParameter("bac"));
                 congNhan.setBac(bac);
                 CanBoDAO.addCongNhan(congNhan);
+                resp.setAttribute("cong_nhan_list", CanBoDAO.getCongNhanList());
                 break;
         }
         return resp;
@@ -76,21 +79,36 @@ public class HomeController implements Controller {
         Response resp = new Response();
         String canBoType = req.getParameter("can_bo_type");
         int selectedCanBoId = Integer.parseInt(req.getParameter("selected_can_bo_id"));
+        String tmp = "";
         switch (canBoType) {
             case "ky_su":
                 KySu kySu = CanBoDAO.getKySu(selectedCanBoId);
                 setBasicInformations(req, kySu);
-                String tmp = req.getParameter("nghanh_dao_tao");
+                tmp = req.getParameter("nghanh_dao_tao");
                 String nghanhDaoTao = tmp.equals("") ? kySu.getNghanhDaoTao() : tmp;
                 kySu.setNghanhDaoTao(nghanhDaoTao);
                 CanBoDAO.updateKySu(kySu);
+                resp.setAttribute("ky_su_list", CanBoDAO.getKySuList());
                 break;
             case "nhan_vien":
+                NhanVien nhanVien = CanBoDAO.getNhanVien(selectedCanBoId);
+                setBasicInformations(req, nhanVien);
+                tmp = req.getParameter("cong_viec");
+                String congViec = tmp.equals("") ? nhanVien.getCongViec() : tmp;
+                nhanVien.setCongViec(congViec);
+                CanBoDAO.updateNhanVien(nhanVien);
+                resp.setAttribute("nhan_vien_list", CanBoDAO.getNhanVienList());
                 break;
             case "cong_nhan":
+                CongNhan congNhan = CanBoDAO.getCongNhan(selectedCanBoId);
+                setBasicInformations(req, congNhan);
+                tmp = req.getParameter("bac");
+                int bac = tmp.equals("") ? congNhan.getBac() : Integer.parseInt(tmp);
+                congNhan.setBac(bac);
+                CanBoDAO.updateCongNhan(congNhan);
+                resp.setAttribute("cong_nhan_list", CanBoDAO.getCongNhanList());
                 break;
         }
-        resp.setAttribute("ky_su_list", CanBoDAO.getKySuList());
         return resp;
     }
 

@@ -112,6 +112,7 @@ public class HomeConsole {
         printAxisX('_', 50, true);
         Request req = new Request();
         req.setMethod("post");
+        Response resp = null;
         switch (choice) {
             case 1:
                 System.out.println("* Them Ky su");
@@ -120,6 +121,9 @@ public class HomeConsole {
                 String nghanhDaoTao = App.systemScanner.nextLine();
                 req.addParameter("nghanh_dao_tao", nghanhDaoTao);
                 req.addParameter("can_bo_type", "ky_su");
+                resp = HomeController.getInstance().service(req);
+                List<KySu> kySuList = (List<KySu>) resp.getAttribute("ky_su_list");
+                showKySuList(kySuList);
                 break;
             case 2:
                 System.out.println("* Them Nhan vien");
@@ -128,6 +132,9 @@ public class HomeConsole {
                 String congViec = App.systemScanner.nextLine();
                 req.addParameter("cong_viec", congViec);
                 req.addParameter("can_bo_type", "nhan_vien");
+                resp = HomeController.getInstance().service(req);
+                List<NhanVien> nhanVienList = (List<NhanVien>) resp.getAttribute("nhan_vien_list");
+                showNhanVienList(nhanVienList);
                 break;
             case 3:
                 System.out.println("* Them Cong nhan");
@@ -136,9 +143,12 @@ public class HomeConsole {
                 String bac = App.systemScanner.nextLine();
                 req.addParameter("bac", bac);
                 req.addParameter("can_bo_type", "cong_nhan");
+                resp = HomeController.getInstance().service(req);
+                List<CongNhan> congNhanList = (List<CongNhan>) resp.getAttribute("cong_nhan_list");
+                showCongNhanList(congNhanList);
                 break;
         }
-        Response resp = HomeController.getInstance().service(req);
+        showAddCanBoMenu();
     }
 
     public static void showUpdateCanBoMenu() {
@@ -166,6 +176,7 @@ public class HomeConsole {
         Request req = new Request();
         req.setMethod("get");
         Response resp = new Response();
+        int selectedCanBoId = -1;
         switch (choice) {
             case 1:
                 req.addParameter("can_bo_table_name", "ky_su_list");
@@ -181,7 +192,7 @@ public class HomeConsole {
                     showMainMenu();
                     return;
                 }
-                int selectedCanBoId = Integer.parseInt(tmp);
+                selectedCanBoId = Integer.parseInt(tmp);
                 req.addParameter("selected_can_bo_id", String.valueOf(selectedCanBoId));
                 System.out.println("* Keep empty will have no change");
                 inputBasicInformation(req);
@@ -191,9 +202,59 @@ public class HomeConsole {
                 resp = HomeController.getInstance().service(req);
                 kySuList = (List<KySu>) resp.getAttribute("ky_su_list");
                 showKySuList(kySuList);
-                showUpdateCanBoMenu();
+                break;
+            case 2:
+                req.addParameter("can_bo_table_name", "nhan_vien_list");
+                resp = HomeController.getInstance().service(req);
+                List<NhanVien> nhanVienList = (List<NhanVien>) resp.getAttribute("nhan_vien_list");
+                showNhanVienList(nhanVienList);
+                req.clearAllParameter();
+                System.out.print("Type in an ID to Edit (Keep empty to back to Main menu) = ");
+                req.setMethod("put");
+                req.addParameter("can_bo_type", "nhan_vien");
+                tmp = App.systemScanner.nextLine();
+                if (tmp.equals("")) {
+                    showMainMenu();
+                    return;
+                }
+                selectedCanBoId = Integer.parseInt(tmp);
+                req.addParameter("selected_can_bo_id", String.valueOf(selectedCanBoId));
+                System.out.println("* Keep empty will have no change");
+                inputBasicInformation(req);
+                System.out.print("Cong viec = ");
+                String congViec = App.systemScanner.nextLine();
+                req.addParameter("cong_viec", congViec);
+                resp = HomeController.getInstance().service(req);
+                nhanVienList = (List<NhanVien>) resp.getAttribute("nhan_vien_list");
+                showNhanVienList(nhanVienList);
+                break;
+            case 3:
+                req.addParameter("can_bo_table_name", "cong_nhan_list");
+                resp = HomeController.getInstance().service(req);
+                List<CongNhan> congNhanList = (List<CongNhan>) resp.getAttribute("cong_nhan_list");
+                showCongNhanList(congNhanList);
+                req.clearAllParameter();
+                System.out.print("Type in an ID to Edit (Keep empty to back to Main menu) = ");
+                req.setMethod("put");
+                req.addParameter("can_bo_type", "cong_nhan");
+                tmp = App.systemScanner.nextLine();
+                if (tmp.equals("")) {
+                    showMainMenu();
+                    return;
+                }
+                selectedCanBoId = Integer.parseInt(tmp);
+                req.addParameter("selected_can_bo_id", String.valueOf(selectedCanBoId));
+                System.out.println("* Keep empty will have no change");
+                inputBasicInformation(req);
+                System.out.print("Bac = ");
+                String bac = App.systemScanner.nextLine();
+                req.addParameter("bac", bac);
+                resp = HomeController.getInstance().service(req);
+                congNhanList = (List<CongNhan>) resp.getAttribute("cong_nhan_list");
+                showCongNhanList(congNhanList);
                 break;
         }
+        showUpdateCanBoMenu();
     }
 
     private static void inputBasicInformation(Request req) {
@@ -251,9 +312,9 @@ public class HomeConsole {
         System.out.print('|');
         printAxisX('_', 122, false);
         System.out.println('|');
-        nhanVienList.forEach(ks -> {
+        nhanVienList.forEach(nv -> {
             System.out.print("| ");
-            ks.showInformation();
+            nv.showInformation();
             System.out.println('|');
         });
         System.out.print('|');
