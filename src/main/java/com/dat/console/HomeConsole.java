@@ -8,6 +8,7 @@ import com.dat.model.CanBo;
 import com.dat.model.CongNhan;
 import com.dat.model.KySu;
 import com.dat.model.NhanVien;
+import com.dat.util.DBConnection;
 
 public class HomeConsole {
 
@@ -22,12 +23,13 @@ public class HomeConsole {
 
     public static void showMainMenu() {
         printAxisX('_', 50, true);
-        System.out.format("|%-48s|\n", "1. Hien thi bang Can bo");
-        System.out.format("|%-48s|\n", "2. Hien thi bang Ky su");
-        System.out.format("|%-48s|\n", "3. Hien thi bang Nhan vien");
-        System.out.format("|%-48s|\n", "4. Hien thi bang Cong nhan");
+        System.out.format("|%-48s|\n", "1. Hien thi danh sach Can bo");
+        System.out.format("|%-48s|\n", "2. Hien thi danh sach Ky su");
+        System.out.format("|%-48s|\n", "3. Hien thi danh sach Nhan vien");
+        System.out.format("|%-48s|\n", "4. Hien thi danh sach Cong nhan");
         System.out.format("|%-48s|\n", "5. Them moi Can bo");
         System.out.format("|%-48s|\n", "6. Update Can bo");
+        System.out.format("|%-48s|\n", "7. Change Database");
         System.out.format("|%-48s|\n", "0. Thoat");
         System.out.print('|');
         printAxisX('_', 48, false);
@@ -36,7 +38,7 @@ public class HomeConsole {
         do {
             System.out.print("choice = ");
             choice = Integer.parseInt(App.systemScanner.nextLine());
-        } while (!(0 <= choice && choice <= 6));
+        } while (!(0 <= choice && choice <= 7));
         if (choice != 0) {
             processMainMenu(choice);
         }
@@ -83,6 +85,17 @@ public class HomeConsole {
                 break;
             case 6:
                 showUpdateCanBoMenu();
+                break;
+            case 7:
+                printAxisX('_', 50, true);
+                System.out.print("url = ");
+                DBConnection.url = App.systemScanner.nextLine();
+                System.out.print("user = ");
+                DBConnection.user = App.systemScanner.nextLine();
+                System.out.print("password = ");
+                char[] passwordChars = App.systemConsole.readPassword();
+                DBConnection.password = String.copyValueOf(passwordChars);
+                showMainMenu();
                 break;
         }
     }
