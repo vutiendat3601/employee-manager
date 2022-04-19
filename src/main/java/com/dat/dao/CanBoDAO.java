@@ -18,7 +18,6 @@ public class CanBoDAO {
     private static Connection conn;
 
     // READ
-
     public static boolean getBasicInformation(int canBoId, CanBo canBo) {
         boolean result = false;
         String sqlGetBasicInformation = "SELECT * FROM can_bo WHERE id = ?";
@@ -226,7 +225,6 @@ public class CanBoDAO {
     }
 
     // CREATE
-
     public static int addCanBo(CanBo canBo) {
         int canBoId = -1;
         Connection conn = getDBConnection();
@@ -291,7 +289,6 @@ public class CanBoDAO {
     }
 
     // UPDATE
-
     public static void updateCanBo(CanBo canBo) {
         Connection conn = getDBConnection();
         String sqlUpdateCanBo = "UPDATE can_bo SET ten = ?, tuoi = ?, gioi_tinh = ?, dia_chi = ? WHERE id = ?";
@@ -354,6 +351,8 @@ public class CanBoDAO {
             e.printStackTrace();
         }
     }
+
+    public static void delete 
 
     private static Connection getDBConnection() {
         if (conn == null) {
