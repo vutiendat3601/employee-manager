@@ -29,7 +29,8 @@ public class HomeConsole {
         System.out.format("|%-48s|\n", "4. Hien thi danh sach Cong nhan");
         System.out.format("|%-48s|\n", "5. Them moi Can bo");
         System.out.format("|%-48s|\n", "6. Update Can bo");
-        System.out.format("|%-48s|\n", "7. Change Database");
+        System.out.format("|%-48s|\n", "7. Delete Can bo");
+        System.out.format("|%-48s|\n", "8. Change Database");
         System.out.format("|%-48s|\n", "0. Thoat");
         System.out.print('|');
         printAxisX('_', 48, false);
@@ -38,7 +39,7 @@ public class HomeConsole {
         do {
             System.out.print("choice = ");
             choice = Integer.parseInt(App.systemScanner.nextLine());
-        } while (!(0 <= choice && choice <= 7));
+        } while (!(0 <= choice && choice <= 8));
         if (choice != 0) {
             processMainMenu(choice);
         }
@@ -47,12 +48,13 @@ public class HomeConsole {
     public static void processMainMenu(int choice) {
         Request req = new Request();
         Response resp = null;
+        List<CanBo> canBoList = null;
         switch (choice) {
             case 1:
                 req.setMethod("get");
                 req.addParameter("can_bo_table_name", "can_bo_list");
                 resp = HomeController.getInstance().service(req);
-                List<CanBo> canBoList = (List<CanBo>) resp.getAttribute("can_bo_list");
+                canBoList = (List<CanBo>) resp.getAttribute("can_bo_list");
                 showCanBoList(canBoList);
                 showMainMenu();
                 break;
@@ -87,6 +89,9 @@ public class HomeConsole {
                 showUpdateCanBoMenu();
                 break;
             case 7:
+                showDeleteCanBoMenu();
+                break;
+            case 8:
                 printAxisX('_', 50, true);
                 System.out.print("url = ");
                 DBConnection.url = App.systemScanner.nextLine();
@@ -268,6 +273,103 @@ public class HomeConsole {
                 break;
         }
         showUpdateCanBoMenu();
+    }
+
+    public static void showDeleteCanBoMenu() {
+        printAxisX('_', 50, true);
+        System.out.format("|%-48s|\n", "1. Delete Ky su");
+        System.out.format("|%-48s|\n", "2. Delete Nhan vien");
+        System.out.format("|%-48s|\n", "3. Delete Cong nhan");
+        System.out.format("|%-48s|\n", "0. Quay lai Main menu");
+        System.out.print('|');
+        printAxisX('_', 48, false);
+        System.out.println('|');
+        int choice = -1;
+        do {
+            System.out.print("choice = ");
+            choice = Integer.parseInt(App.systemScanner.nextLine());
+        } while (!(0 <= choice && choice <= 3));
+        if (choice == 0) {
+            showMainMenu();
+        } else {
+            processDeleteCanBoMenu(choice);
+        }
+    }
+
+    public static void processDeleteCanBoMenu(int choice) {
+        Request req = new Request();
+        Response resp = new Response();
+        int selectedCanBoId = -1;
+        String tmp = "";
+        switch (choice) {
+            case 1:
+                req.setMethod("get");
+                req.addParameter("can_bo_table_name", "ky_su_list");
+                resp = HomeController.getInstance().service(req);
+                List<KySu> kySuList = (List<KySu>) resp.getAttribute("ky_su_list");
+                showKySuList(kySuList);
+                req.clearAllParameter();
+                printAxisX('_', 50, true);
+                System.out.print("Type in an ID to Delete (Keep empty to back to Main menu) = ");
+                req.addParameter("can_bo_type", "ky_su");
+                tmp = App.systemScanner.nextLine();
+                if (tmp.equals("")) {
+                    showMainMenu();
+                    return;
+                }
+                selectedCanBoId = Integer.parseInt(tmp);
+                req.setMethod("delete");
+                req.addParameter("selected_can_bo_id", String.valueOf(selectedCanBoId));
+                resp = HomeController.getInstance().service(req);
+                kySuList = (List<KySu>) resp.getAttribute("ky_su_list");
+                showKySuList(kySuList);
+                break;
+            case 2:
+                req.setMethod("get");
+                req.addParameter("can_bo_table_name", "nhan_vien_list");
+                resp = HomeController.getInstance().service(req);
+                List<NhanVien> nhanVienList = (List<NhanVien>) resp.getAttribute("nhan_vien_list");
+                showNhanVienList(nhanVienList);
+                req.clearAllParameter();
+                printAxisX('_', 50, true);
+                System.out.print("Type in an ID to Delete (Keep empty to back to Main menu) = ");
+                req.addParameter("can_bo_type", "nhan_vien");
+                tmp = App.systemScanner.nextLine();
+                if (tmp.equals("")) {
+                    showMainMenu();
+                    return;
+                }
+                selectedCanBoId = Integer.parseInt(tmp);
+                req.setMethod("delete");
+                req.addParameter("selected_can_bo_id", String.valueOf(selectedCanBoId));
+                resp = HomeController.getInstance().service(req);
+                nhanVienList = (List<NhanVien>) resp.getAttribute("nhan_vien_list");
+                showNhanVienList(nhanVienList);
+                break;
+            case 3:
+                req.setMethod("get");
+                req.addParameter("can_bo_table_name", "cong_nhan_list");
+                resp = HomeController.getInstance().service(req);
+                List<CongNhan> congNhanList = (List<CongNhan>) resp.getAttribute("cong_nhan_list");
+                showCongNhanList(congNhanList);
+                req.clearAllParameter();
+                printAxisX('_', 50, true);
+                System.out.print("Type in an ID to Delete (Keep empty to back to Main menu) = ");
+                req.addParameter("can_bo_type", "cong_nhan");
+                tmp = App.systemScanner.nextLine();
+                if (tmp.equals("")) {
+                    showMainMenu();
+                    return;
+                }
+                selectedCanBoId = Integer.parseInt(tmp);
+                req.setMethod("delete");
+                req.addParameter("selected_can_bo_id", String.valueOf(selectedCanBoId));
+                resp = HomeController.getInstance().service(req);
+                congNhanList = (List<CongNhan>) resp.getAttribute("cong_nhan_list");
+                showCongNhanList(congNhanList);
+                break;
+        }
+        showDeleteCanBoMenu();
     }
 
     private static void inputBasicInformation(Request req) {

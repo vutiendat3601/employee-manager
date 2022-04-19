@@ -11,8 +11,10 @@ public interface Controller {
             return doGet(req);
         } else if (methodName.equalsIgnoreCase("post")) {
             return doPost(req);
-        } else if (methodName.equalsIgnoreCase("put")){
+        } else if (methodName.equalsIgnoreCase("put")) {
             return doPut(req);
+        }else if (methodName.equalsIgnoreCase("delete")){
+            return doDelete(req);
         }
         return null;
     }
@@ -22,4 +24,6 @@ public interface Controller {
     Response doPost(Request req);
 
     Response doPut(Request req);
+
+    Response doDelete(Request req);
 }

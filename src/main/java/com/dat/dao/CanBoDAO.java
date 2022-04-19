@@ -352,7 +352,60 @@ public class CanBoDAO {
         }
     }
 
-    public static void delete 
+    public static void deleteCanBo(int canBoId) {
+        Connection conn = getDBConnection();
+        String sqlDeleteCanBo = "DELETE FROM can_bo WHERE id = ?";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sqlDeleteCanBo);
+            ps.setInt(1, canBoId);
+            ps.executeUpdate();
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteKySu(int canBoId) {
+        Connection conn = getDBConnection();
+        String sqlDeleteKySu = "DELETE FROM ky_su WHERE can_bo_id = ?";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sqlDeleteKySu);
+            ps.setInt(1, canBoId);
+            ps.executeUpdate();
+            ps.close();
+            deleteCanBo(canBoId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteNhanVien(int canBoId) {
+        Connection conn = getDBConnection();
+        String sqlDeleteKySu = "DELETE FROM nhan_vien WHERE can_bo_id = ?";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sqlDeleteKySu);
+            ps.setInt(1, canBoId);
+            ps.executeUpdate();
+            ps.close();
+            deleteCanBo(canBoId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteCongNhan(int canBoId) {
+        Connection conn = getDBConnection();
+        String sqlDeleteKySu = "DELETE FROM cong_nhan WHERE can_bo_id = ?";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sqlDeleteKySu);
+            ps.setInt(1, canBoId);
+            ps.executeUpdate();
+            ps.close();
+            deleteCanBo(canBoId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     private static Connection getDBConnection() {
         if (conn == null) {

@@ -132,10 +132,36 @@ public class HomeController implements Controller {
         canBo.setDiaChi(diaChi);
     }
 
+    @Override
+    public Response doDelete(Request req) {
+        int canBoId = Integer.parseInt(req.getParameter("selected_can_bo_id"));
+        String canBoType = req.getParameter("can_bo_type");
+        Response resp = new Response();
+        switch (canBoType) {
+            case "ky_su":
+                CanBoDAO.deleteKySu(canBoId);
+                List<KySu> kySuList = CanBoDAO.getKySuList();
+                resp.setAttribute("ky_su_list", kySuList);
+                break;
+            case "nhan_vien":
+                CanBoDAO.deleteNhanVien(canBoId);
+                List<NhanVien> nhanVienList = CanBoDAO.getNhanVienList();
+                resp.setAttribute("nhan_vien_list", nhanVienList);
+                break;
+            case "cong_nhan":
+                CanBoDAO.deleteCongNhan(canBoId);
+                List<CongNhan> congNhanList = CanBoDAO.getCongNhanList();
+                resp.setAttribute("cong_nhan_list", congNhanList);
+                break;
+        }
+        return resp;
+    }
+
     public static HomeController getInstance() {
         if (homeController == null) {
             homeController = new HomeController();
         }
         return homeController;
     }
+
 }
